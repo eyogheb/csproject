@@ -13,7 +13,7 @@ try:
 except Exception as e:
     print(e)
 
-db = client["test"]  # Database name
+db = client["Menu_DB"]  # Database name
 menu_collection = db["menu"]  # Collection name
 
 
@@ -106,7 +106,6 @@ menu_data = [
     "calories": 480,
     "modifications": ["no salt", "extra salt"]
   },
-
   {
     "name": "Apple Slices",
     "category": "Sides",
