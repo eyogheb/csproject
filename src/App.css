@@ -1,0 +1,119 @@
+#root {
+  width: 100%;
+  height: 100vh;
+
+}
+
+body {
+  background-color: whitesmoke;
+  color: darkslategray;
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
+
+.textHeading {
+  font-size: 2.5rem;
+}
+
+.textParagraph {
+  font-size: 0.75rem;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  margin: 0 auto;
+  width: 60%;
+  height: 100%;
+  padding: 0px;
+  border-radius: 25px;
+  box-shadow: 0px 0px 50px rgba(0, 0, 0, 0.1);
+  background-color: white;
+  text-align: center;
+
+}
+
+.chatBox {
+  background-color: ghostwhite;
+  width: 100%;
+  height: 75%;
+  overflow-y: auto;
+}
+
+.chatBox::-webkit-scrollbar {
+  width: 4px;
+}
+
+.chatBox::-webkit-scrollbar-track {
+  background: ghostwhite;
+}
+
+.chatBox::-webkit-scrollbar-thumb {
+  background: lightgray;
+  border-radius: 4px;
+}
+
+.chatBar {
+  display: flex;
+  text-align: left;
+  margin: 20px 0px 20px 3%;
+  align-items: center;
+}
+
+.chatBar input {
+  width: 89%;
+  height: 30%;
+  padding: 20px 5px;
+  border: 0px;
+  border-radius: 15px;
+  background-color: ghostwhite;
+  font-size: 1.2rem;
+  color: darkslategray;
+}
+
+.chatBar input::placeholder {
+  color: darkslategray;
+}
+
+.chatBar input:focus {
+  outline: none;
+}
+
+.chatBar button {
+  margin: auto;
+  width: 50px;
+  height: 50px;
+  background-image: url(./assets/arrow.png);
+  background-size: 95%;
+  background-repeat: no-repeat;
+  background-color: black;
+  background-position: center;
+  border-radius: 50%;
+}
+
+.chatBar button:focus {
+  outline: none;
+}
+
+.messageList {
+  display: flex;
+  flex-direction: column;
+}
+
+.messageBubble {
+  display: inline-block;
+  margin: 10px 60px 10px 0px;
+  padding: 10px 10px 10px 10px;
+  min-width: 5%;
+  max-width: 55%;
+  min-height: 5%;
+  max-height: 80%;
+  border-radius: 20px;
+  background-color: white;
+  text-align: center;
+  align-self: flex-end;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0px 0px 50px rgba(0, 0, 0, 0.1);
+  word-wrap: break-word;
+  color: darkslategray;
+}
