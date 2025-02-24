@@ -34,7 +34,9 @@ llm = ChatGroq(model="deepseek-r1-distill-llama-70b", temperature=0, max_retries
 shopping_cart = {}
 
 def get_menu_item(args) -> list:
-    """Fetches menu items based on flexible search criteria (name, category, calorie limit, etc.)."""
+
+    if isinstance(args, str): # This block just puts the args in json format
+        args = json.loads(args)
 
     # Extract search filters
     item_name = args.get("item_name", "").strip().lower()
@@ -68,6 +70,9 @@ def get_menu_item(args) -> list:
 
 def add_to_cart(args) -> str:
 
+    if isinstance(args, str):
+        args = json.loads(args)
+
     item_name = args.get("item_name", "").strip().lower() # Convert to lowercase
     quantity = int(args.get("quantity", 1)) # Convert to integer
     modifications = tuple(sorted(args.get("modifications", [])))   # converts modifications to a tuple and sorts them
@@ -88,6 +93,9 @@ def add_to_cart(args) -> str:
     return f"Added {quantity}x {item_name}(s){mod_text} to your cart."
 
 def remove_from_cart(args) -> str:
+
+    if isinstance(args, str):
+        args = json.loads(args)
     
     item_name = args.get("item_name", "").strip().lower()  # Convert to lowercase
     quantity = int(args.get("quantity", 1)) # Convert to integer
@@ -165,7 +173,7 @@ view_cart_tool = Tool(
 get_menu_item_tool = Tool(
     "get_menu_item",
     get_menu_item,
-    "Retrieves menu items based on search criteria. Supports item_name (string), category (string), and max_calories (integer)."
+    "Retrieves menu items based on search criteria. Supports item_name (string), category (string), and max_calories (integer). Use this tool to look up information on menu items"
 )
 
 
