@@ -8,7 +8,9 @@ from langchain.agents import initialize_agent, AgentType
 from langchain_core.messages import AIMessage, HumanMessage, SystemMessage
 from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
-
+from langgraph.checkpoint.memory import MemorySaver
+from langgraph.graph import START, MessagesState, StateGraph
+from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 
 load_dotenv("API.env")
 uri = os.getenv("MONGODB_URI") # Loads the MongoDB URI from the environment
@@ -18,8 +20,8 @@ db = client["Menu_DB"]
 menu_collection = db["menu"]    # This is the database we are using
 
 # Initialize API keys
-GROQ_API_KEY = os.getenv("GROQ_API_KEY") # Loads the GROQ API key from the environment
-os.environ["GROQ_API_KEY"] = GROQ_API_KEY
+os.environ["GROQ_API_KEY"] = os.getenv("GROQ_API_KEY") # Loads the GROQ API key from the environment
+
 
 try:       # This block just checks the connection to the database
     client.admin.command('ping')
@@ -320,6 +322,37 @@ remove_combo_tool = Tool(
 
 
 
+
+
+menu_text = "\n".join([ # This block just formats the menu items for the agent to use
+    f"- {item['name']} ({item['category']}): ${item['price']:.2f}"
+    for item in full_menu
+]) 
+
+
+
+prompt_template = ChatPromptTemplate.from_messages(
+    [
+        (
+            "system",
+            "You are a helpful AI assistant managing a shopping cart. "
+            "The current menu includes the following items:\n\n" +
+            menu_text +
+            "\n\nYou should use this knowledge to answer questions about the menu. "
+            "Always use get_menu_item to search for menu items. "
+            "When calling functions, DO NOT wrap JSON in backticks or Markdown formatting. "
+            "When adding an item with modifications, ensure the modifications are valid. "
+            "If a user adds an entree, kindly ask if they would like to make it a combo. "
+            "If the user agrees to make it a combo, remove the entree from the cart and add the combo instead."
+            "If the user asks about a menu item, look up the item using get_menu_item and answer based on its details."
+            "IMPORTANT: when you use a tool, you must use the results"
+            "IMPORTANT: Dont wrap thoughts with anything (for example **)",
+        ),
+        MessagesPlaceholder(variable_name="messages"),
+    ]
+)
+
+
 # Create an AI Agent
 agent = initialize_agent(
     tools=[add_item_tool, remove_item_tool, view_cart_tool, get_menu_item_tool, remove_combo_tool, add_combo_tool], # The list of tools we are giving it 
@@ -329,36 +362,43 @@ agent = initialize_agent(
     handle_parsing_errors=True,  
 )
 
-menu_text = "\n".join([ # This block just formats the menu items for the agent to use
-    f"- {item['name']} ({item['category']}): ${item['price']:.2f}"
-    for item in full_menu
-]) 
-
-message_history = [  # This block is the startup message we send to the agent explaining what it is and what it should
-    SystemMessage(content=(
-        "You are a helpful AI assistant managing a shopping cart."
-        " The current menu includes the following items:\n\n"
-        f"{menu_text}\n\n"
-        "You should use this knowledge to answer questions about the menu."
-        " Always use get_menu_item to search for menu items."
-        " When calling functions, DO NOT wrap JSON in backticks (`) or Markdown formatting."
-        "When adding an item with modifications, include the modifications make sure the modification is possible by referencing the list of available modifications for that item. "
-        "for example input should look like: { \"item_name\": \"Big Mac\", \"modifications\": [] the list of modifications may have any number, 0 or greater of unique modifications."
-        " But it may not have contradictory modifications. For example, you may not have both \"no pickles\" and \"extra pickles\" in the same modification list."
-        "Each request will include the message history, only the act on the most recent request, the rest of the history is for context."
-        "When using view_cart, include the total cost for those items in the response."
-        "If a user adds an entree kindly ask them if they would like to make it a combo"
-        "If the user asks a question about a menu item, look up the item using get_menu_item, and answer the question based on the item's details."
-        "If you call get_menu_item, you MUST wait for the function to return a response before proceeding."
-        "Ensure the response is fully structured before replying to the user."
-
-    ))
-]
-
-
-
+def call_model(state: MessagesState):
+    prompt = prompt_template.invoke(state)
+    messages = prompt.to_messages()  # Convert the prompt to the required list format
+    result = agent.invoke(messages)
+    
+    # Convert the result to the required message format
+    if isinstance(result, dict) and "input" in result and "output" in result:
+        # If the agent returns a dict with 'input' and 'output', wrap the output properly.
+        formatted = [{"role": "assistant", "content": result["output"]}]
+    elif isinstance(result, str):
+        # If it's a simple string, wrap it.
+        formatted = [{"role": "assistant", "content": result}]
+    elif isinstance(result, list):
+        # If it's a list, ensure each element is a dict with 'role' and 'content'
+        formatted = []
+        for r in result:
+            if isinstance(r, dict) and "role" in r and "content" in r:
+                formatted.append(r)
+            elif isinstance(r, dict) and "input" in r and "output" in r:
+                formatted.append({"role": "assistant", "content": r["output"]})
+            else:
+                formatted.append({"role": "assistant", "content": str(r)})
+    else:
+        formatted = [{"role": "assistant", "content": str(result)}]
+    
+    return {"messages": formatted}
 
 
+workflow = StateGraph(state_schema=MessagesState)
+workflow.add_edge(START, "model")
+workflow.add_node("model", call_model)
+
+memory = MemorySaver()
+app = workflow.compile(checkpointer=memory)
+
+config = {"configurable": {"thread_id": "abc345"}}
+                       
 print("\nAI-Powered Shopping Cart") # Some dummy text mostly to remind that exit and quit break the loop
 print("You can ask the AI to add or remove items, and check your cart.")
 print("Type 'exit' or 'quit' to stop.\n")
@@ -370,16 +410,13 @@ while True: # do forever
         print("\nThank you for shopping! Have a great day!")
         break
 
-    message_history.append(HumanMessage(content=user_input)) # Currently the message history is a list of all messages sent to and from the agent, we add the new query to the list
 
     try:
-        response = agent.invoke({"input": message_history})  # this sends the message history and the new query to the agent and gets the response
-        print(response)
-        ai_response = response["output"] # This is mostly for formatting in the message_history, it gets the actual response from the tuple that the agent returns
-
-        message_history.append(AIMessage(content=ai_response))
-
-        print(f"\nAI Response: {ai_response}\n") # This prints the response to the console
-        print(shopping_cart.items()) # THis prints the cart as it currently is, this is just here for debugging purposes
+        input_messages = [HumanMessage(user_input)]
+        output = app.invoke({"messages": input_messages}, config)
+        output["messages"][-1].pretty_print()
+        #ai_response = agent.run(user_input)
+        #print(f"\nAI Response: {ai_response}\n") # This prints the response to the console
+        print(shopping_cart.items()) # This prints the cart as it currently is, this is just here for debugging purposes
     except Exception as e:
         print(f"\nError: {str(e)}\n")
