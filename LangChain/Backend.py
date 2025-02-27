@@ -158,16 +158,16 @@ def add_combo(args) -> str:
     if "entree" not in args or "side" not in args or "drink" not in args:
         return "Incomplete combo specification. Please provide an entree, a side, and a drink to form a combo."
 
-    quantity = int(args.get("quantity", 1))
+    quantity = int(args.get("quantity", 1))#We extract the items and their modifications as well as the quantity
     entree_data = args.get("entree", {})
     side_data = args.get("side", {})
     drink_data = args.get("drink", {})
 
-    if not entree_data or not side_data or not drink_data:
+    if not entree_data or not side_data or not drink_data: #ensures we have all 3 parts of a combo
         return "Combo must include one entree, one side, and one drink."
 
     # Extract item names and modifications
-    entree_item_name = entree_data.get("item_name", "").strip().lower()
+    entree_item_name = entree_data.get("item_name", "").strip().lower() #extract the name and modifications into separate variables
     side_item_name = side_data.get("item_name", "").strip().lower()
     drink_item_name = drink_data.get("item_name", "").strip().lower()
     entree_mods = tuple(sorted(entree_data.get("modifications", [])))
@@ -175,7 +175,7 @@ def add_combo(args) -> str:
     drink_mods = tuple(sorted(drink_data.get("modifications", [])))
 
     # Fetch each menu item (Ensures they exist)
-    entree_result = get_menu_item({"item_name": entree_item_name})
+    entree_result = get_menu_item({"item_name": entree_item_name}) # This has the agent query the menu so we can ensure we have the right items and make sure they are the right types (entree, side, and drink)
     side_result = get_menu_item({"item_name": side_item_name})
     drink_result = get_menu_item({"item_name": drink_item_name})
 
@@ -187,7 +187,7 @@ def add_combo(args) -> str:
         return f"Drink item '{drink_item_name}' not found."
 
     # Extract the first matching item from each query result
-    entree_item = entree_result[0]
+    entree_item = entree_result[0]#the result is returned as a list of all matching items, so we select the first (should be only one result as names are unique)
     side_item = side_result[0]
     drink_item = drink_result[0]
 
@@ -208,7 +208,7 @@ def add_combo(args) -> str:
         (entree_item_name, entree_mods),
         (side_item_name, side_mods),
         (drink_item_name, drink_mods),
-    )
+    ) #we use this to see if an instance of the combo is in the cart already
 
     # Store only essential details in the shopping cart
     if combo_key not in shopping_cart:
@@ -222,13 +222,13 @@ def add_combo(args) -> str:
             "price_per_combo": combo_price,
         }
 
-    shopping_cart[combo_key]["quantity"] += quantity
+    shopping_cart[combo_key]["quantity"] += quantity # add the order to the cart
 
     return (f"Added {quantity} combo(s) including {entree_item_name}, {side_item_name}, and {drink_item_name} "
             f"with a 10% discount to your cart. Price per combo: ${combo_price:.2f}")
 
 
-def remove_combo(args) -> str:
+def remove_combo(args) -> str: # this is the same as add_combo, but instead of adding quantity we remove it, and if the resulting quantity is zero, we remove the entry from the cart
 
     if isinstance(args, str):
         args = json.loads(args)
@@ -293,7 +293,7 @@ get_menu_item_tool = Tool(
     "get_menu_item",
     get_menu_item,
     "Retrieves menu items based on search criteria. Supports item_name (string), category (string), and max_calories (integer). Use this tool to look up information on menu items")
-add_combo_tool = Tool(
+add_combo_tool = Tool( # maybe need to revise the description for this and remove combo, sometimes the agent formats the input wrong, but we cant give an explicit example, it breaks the description
     "add_combo",
     add_combo,
     (
@@ -342,7 +342,7 @@ prompt_template = ChatPromptTemplate.from_messages(
             "Always use get_menu_item to search for menu items. "
             "When calling functions, DO NOT wrap JSON in backticks or Markdown formatting. "
             "When adding an item with modifications, ensure the modifications are valid. "
-            "If a user adds an entree, kindly ask if they would like to make it a combo. "
+            "If a user adds an entree, kindly ask if they would like to make it a combo after adding the entree. "
             "If the user agrees to make it a combo, remove the entree from the cart and add the combo instead."
             "If the user asks about a menu item, look up the item using get_menu_item and answer based on its details."
             "IMPORTANT: when you use a tool, you must use the results"
@@ -367,7 +367,7 @@ def call_model(state: MessagesState):
     messages = prompt.to_messages()  # Convert the prompt to the required list format
     result = agent.invoke(messages)
     
-    # Convert the result to the required message format
+    # LangChain requires the response to be in a dict with role and content fields, our agent just returns output, so we format the response here for LangChain
     if isinstance(result, dict) and "input" in result and "output" in result:
         # If the agent returns a dict with 'input' and 'output', wrap the output properly.
         formatted = [{"role": "assistant", "content": result["output"]}]
@@ -390,14 +390,14 @@ def call_model(state: MessagesState):
     return {"messages": formatted}
 
 
-workflow = StateGraph(state_schema=MessagesState)
+workflow = StateGraph(state_schema=MessagesState) 
 workflow.add_edge(START, "model")
 workflow.add_node("model", call_model)
 
 memory = MemorySaver()
-app = workflow.compile(checkpointer=memory)
+app = workflow.compile(checkpointer=memory)# all of this workflow stuff lets LangChain manage the memory for us
 
-config = {"configurable": {"thread_id": "abc345"}}
+config = {"configurable": {"thread_id": "abc345"}}# we can use this later with a variable for thread id to let multiple users keep their conversations distinct
                        
 print("\nAI-Powered Shopping Cart") # Some dummy text mostly to remind that exit and quit break the loop
 print("You can ask the AI to add or remove items, and check your cart.")
@@ -410,13 +410,10 @@ while True: # do forever
         print("\nThank you for shopping! Have a great day!")
         break
 
-
     try:
         input_messages = [HumanMessage(user_input)]
         output = app.invoke({"messages": input_messages}, config)
         output["messages"][-1].pretty_print()
-        #ai_response = agent.run(user_input)
-        #print(f"\nAI Response: {ai_response}\n") # This prints the response to the console
         print(shopping_cart.items()) # This prints the cart as it currently is, this is just here for debugging purposes
     except Exception as e:
         print(f"\nError: {str(e)}\n")
