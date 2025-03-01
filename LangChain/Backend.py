@@ -319,7 +319,11 @@ remove_combo_tool = Tool(
         "You should format the input on one line"
         "The input should consist of 3 dictionaries, one for each item in the combo, with each containing for example \"item_name\": \"Big Mac\", \"modifications\": []"
     ))
-
+do_nothing_tool = Tool(
+    "do_nothing",
+    do_nothing,
+    "Does nothing. Get past the action stage without performing any action."
+)
 
 
 
@@ -345,6 +349,9 @@ prompt_template = ChatPromptTemplate.from_messages(
             "If a user adds an entree, kindly ask if they would like to make it a combo after adding the entree. "
             "If the user agrees to make it a combo, remove the entree from the cart and add the combo instead."
             "If the user asks about a menu item, look up the item using get_menu_item and answer based on its details."
+            "If the user wants to change an item in their cart, remove the item and add the new item, but be sure to check if the modifications are valid."
+            "Your response must follow the pattern of thought -> action -> response. "
+            "If you already know the correct response you may use do_nothing, but if you have any other relevent tool to use, you should use it."
             "IMPORTANT: when you use a tool, you must use the results"
             "IMPORTANT: Dont wrap thoughts with anything (for example **)",
         ),
@@ -355,7 +362,7 @@ prompt_template = ChatPromptTemplate.from_messages(
 
 # Create an AI Agent
 agent = initialize_agent(
-    tools=[add_item_tool, remove_item_tool, view_cart_tool, get_menu_item_tool, remove_combo_tool, add_combo_tool], # The list of tools we are giving it 
+    tools=[add_item_tool, remove_item_tool, view_cart_tool, get_menu_item_tool, remove_combo_tool, add_combo_tool, do_nothing_tool], # The list of tools we are giving it 
     llm=llm,
     agent=AgentType.ZERO_SHOT_REACT_DESCRIPTION, # We use this type because we want the agent to think before it takes its action
     verbose=True, # This makes the AI print its thoughts to console
