@@ -4,9 +4,9 @@ export function Messagelist({messages, messageRef}) {
             {messages.map((msg, index) => (
                 <div 
                     key = {index}
-                    className="messageBubble"
+                    className={msg.type === "sent" ? "messageBubble" : "agentMessageBubble"}
                 >
-                    {msg}
+                    {msg.text}
                 </div>
             ))}
             <div ref = {messageRef} />

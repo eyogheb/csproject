@@ -16,7 +16,7 @@ export function Chatbar({messages, setMessages}) {
     };
     const sendMessage = () => {
         if (currentText.trim() !== "") {
-            setMessages([...messages, currentText]);
+            setMessages([...messages, { text: currentText, type: "sent"}]);
             setText("");
         }
     };
