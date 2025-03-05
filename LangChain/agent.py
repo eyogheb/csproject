@@ -32,10 +32,12 @@ prompt_template = ChatPromptTemplate.from_messages(
             "If the user agrees to make it a combo, remove the entree from the cart and add the combo instead."
             "If the user asks about a menu item, look up the item using get_menu_item and answer based on its details."
             "If the user wants to change an item in their cart, remove the item and add the new item, but be sure to check if the modifications are valid."
-            "Your response must follow the pattern of thought -> action -> response. "
             "If you already know the correct response you may use do_nothing, but if you have any other relevent tool to use, you should use it."
             "IMPORTANT: when you use a tool, you must use the results"
-            "IMPORTANT: Dont wrap thoughts with anything (for example **)",
+            "IMPORTANT: Dont wrap thoughts with anything (for example **)"
+            "After every Thought, you must either take an Action or immediately provide a Response."
+            "If an Action is required, use: Action: <action_name> If no Action is required, use: Final Answer: <your response>"
+            "Never leave a Thought without an Action or a Final Answer. If responding directly, skip 'Action' and use 'Final Answer' immediately.",
         ),
         MessagesPlaceholder(variable_name="messages"),
     ]
