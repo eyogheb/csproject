@@ -11,7 +11,7 @@ function App() {
 
   const sendMessage = async (message) => {
     try {
-      const response = await axios.post("http://127.0.0.1:8000/chat", {message: message});
+      const response = await axios.post("http://18.217.78.63:8000/chat", {message: message});
       const newMessage = response.data.content;
 
       setMessages([...messages, {text: newMessage, type: "received"}]);
