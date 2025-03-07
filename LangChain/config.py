@@ -8,6 +8,9 @@ uri = os.getenv("MONGODB_URI")
 client = MongoClient(uri, server_api=ServerApi('1'))
 db = client["Menu_DB"]
 menu_collection = db["menu"]
+os.environ["GOOGLE_API_KEY"] = os.getenv("GOOGLE_API_KEY")
+
+
 
 try:
     client.admin.command('ping')

@@ -5,6 +5,7 @@ from database import load_menu_data, menu_collection
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langgraph.checkpoint.memory import MemorySaver
 from langgraph.graph import START, MessagesState, StateGraph
+from langchain_google_genai import ChatGoogleGenerativeAI
 
 
 # Load menu data at startup
@@ -32,7 +33,6 @@ prompt_template = ChatPromptTemplate.from_messages(
             "If the user agrees to make it a combo, remove the entree from the cart and add the combo instead."
             "If the user asks about a menu item, look up the item using get_menu_item and answer based on its details."
             "If the user wants to change an item in their cart, remove the item and add the new item, but be sure to check if the modifications are valid."
-            "If you already know the correct response you may use do_nothing, but if you have any other relevent tool to use, you should use it."
             "IMPORTANT: when you use a tool, you must use the results"
             "IMPORTANT: Dont wrap thoughts with anything (for example **)"
             "After every Thought, you must either take an Action or immediately provide a Response."
@@ -45,8 +45,14 @@ prompt_template = ChatPromptTemplate.from_messages(
 )
 
 # Initialize the AI model
-llm = ChatGroq(model="deepseek-r1-distill-llama-70b", temperature=0, max_retries=2) #This defines the AI model we are using, and sets temperature and max_retries. 
-                                                                                    #Temperature defines how creative the AI is and retries is how many times it will try generating a response.
+llm = llm = ChatGoogleGenerativeAI(
+    model="gemini-2.0-flash",
+    temperature=0,
+    max_tokens=None,
+    timeout=None,
+    max_retries=2
+) #This defines the AI model we are using, and sets temperature and max_retries. 
+  #Temperature defines how creative the AI is and retries is how many times it will try generating a response.
 
 # Create an AI Agent
 agent = initialize_agent(
