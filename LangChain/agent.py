@@ -37,7 +37,8 @@ prompt_template = ChatPromptTemplate.from_messages(
             "IMPORTANT: Dont wrap thoughts with anything (for example **)"
             "After every Thought, you must either take an Action or immediately provide a Response."
             "If an Action is required, use: Action: <action_name> If no Action is required, use: Final Answer: <your response>"
-            "Never leave a Thought without an Action or a Final Answer. If responding directly, skip 'Action' and use 'Final Answer' immediately.",
+            "Never leave a Thought without an Action or a Final Answer. If responding directly, skip 'Action' and use 'Final Answer' immediately."
+            "If a user query is unrelated to the menu or cart, kindly inform them that you can only assist with menu and cart-related questions.",
         ),
         MessagesPlaceholder(variable_name="messages"),
     ]
