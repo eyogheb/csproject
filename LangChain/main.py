@@ -10,7 +10,7 @@ fastapi_app = FastAPI()
 # Allows for Javascript code with a different origin to communicate with server
 fastapi_app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"],
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
