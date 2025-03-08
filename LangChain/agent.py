@@ -28,6 +28,7 @@ prompt_template = ChatPromptTemplate.from_messages(
             "\n\nYou should use this knowledge to answer questions about the menu. "
             "Always use get_menu_item to search for menu items. "
             "When adding an item with modifications, ensure the modifications are valid. "
+            "Allways use JSON formatting when interacting with the cart"
             "If a user adds an entree, kindly ask if they would like to make it a combo after adding the entree. "
             "If the user agrees to make it a combo, remove the entree from the cart and add the combo instead. Otherwise just leave it as is."
             "If the user asks about a menu item, look up the item using get_menu_item and answer based on its details."
