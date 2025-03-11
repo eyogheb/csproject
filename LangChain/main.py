@@ -26,7 +26,7 @@ def chat(request: UserRequest):
         raise HTTPException(status_code=400, detail="No message provided")
     
     input_messages = [HumanMessage(user_input)]
-    output = app.invoke({"messages": input_messages}, {"configurable": {"thread_id": "abc345"}})
+    output = app.invoke({"messages": input_messages}, {"configurable": {"thread_id": "abc345"},"response_format": "json"},)
     return {"content": output["messages"][-1].content}
 
 if __name__ == "__main__":

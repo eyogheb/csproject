@@ -45,10 +45,6 @@ remove_combo_tool = Tool(
         "You should format the input on one line"
         "The input should consist of 3 dictionaries, one for each item in the combo, with each containing for example \"item_name\": \"Big Mac\", \"modifications\": []"
     ))
-do_nothing_tool = Tool(
-    "do_nothing",
-    lambda args: "",
-    "Does nothing. Get past the action stage without performing any action."
-)
 
-tools = [add_item_tool, remove_item_tool, view_cart_tool, get_menu_item_tool, add_combo_tool, remove_combo_tool, do_nothing_tool]
+
+tools = [add_item_tool, remove_item_tool, view_cart_tool, get_menu_item_tool, add_combo_tool, remove_combo_tool]

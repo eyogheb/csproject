@@ -62,7 +62,7 @@ def view_cart(args=None) -> dict:
     if not shopping_cart:
         return {"message": "Your shopping cart is empty."}
 
-    return shopping_cart # This just prints the shopping cart for the agent
+    return {"cart": shopping_cart} # This just prints the shopping cart for the agent
 
 def add_combo(args) -> str:
 
