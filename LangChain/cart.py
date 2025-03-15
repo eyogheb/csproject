@@ -7,8 +7,11 @@ shopping_cart = {}
 
 def add_to_cart(args) -> str:
 
-    if isinstance(args, str):
-        args = json.loads(args)
+    try:
+        if isinstance(args, str):
+            args = json.loads(args)
+    except json.JSONDecodeError:
+        return "Invalid JSON format for adding to cart."
 
     item_name = args.get("item_name", "").strip().lower() # Convert to lowercase
     quantity = int(args.get("quantity", 1)) # Convert to integer
@@ -31,8 +34,11 @@ def add_to_cart(args) -> str:
 
 def remove_from_cart(args) -> str:
 
-    if isinstance(args, str):
-        args = json.loads(args)
+    try:
+        if isinstance(args, str):
+            args = json.loads(args)
+    except json.JSONDecodeError:
+        return "Invalid JSON format for removing from cart."
     
     item_name = args.get("item_name", "").strip().lower()  # Convert to lowercase
     quantity = int(args.get("quantity", 1)) # Convert to integer
@@ -66,8 +72,11 @@ def view_cart(args=None) -> dict:
 
 def add_combo(args) -> str:
 
-    if isinstance(args, str):
-        args = json.loads(args)
+    try:
+        if isinstance(args, str):
+            args = json.loads(args)
+    except json.JSONDecodeError:
+        return "Invalid JSON format for adding a combo."
 
     # Check if all required combo keys are present
     if "entree" not in args or "side" not in args or "drink" not in args:
@@ -145,8 +154,11 @@ def add_combo(args) -> str:
 
 def remove_combo(args) -> str: # this is the same as add_combo, but instead of adding quantity we remove it, and if the resulting quantity is zero, we remove the entry from the cart
 
-    if isinstance(args, str):
-        args = json.loads(args)
+    try:
+        if isinstance(args, str):
+            args = json.loads(args)
+    except json.JSONDecodeError:
+        return "Invalid JSON format for removing a combo."
 
     quantity = int(args.get("quantity", 1))
     entree_data = args.get("entree", {})

@@ -32,6 +32,7 @@ prompt_template = ChatPromptTemplate.from_messages(
             "If a user adds an entree, kindly ask if they would like to make it a combo after adding the entree."
             "Do not make assumptions about what the items the user wants when making a combo, if they do not tell you, ask them"
             "When calling add_combo or remove_combo, the input should be one JSON object with three keys: entree, side, and drink. Each key should contain a dictionary with the item name and modifications. A fourth key, quantity, is optional, if not provided it defaults to one"
+            "When you remove items from the cart, in your response tell the user how many of the item were removed, dont just use the response from the function call"
             "If the user agrees to make it a combo, remove the entree from the cart and add the combo instead. Otherwise just leave it as is."
             "If the user asks about a menu item, look up the item using get_menu_item and answer based on its details."
             "If the user wants to change an item in their cart, remove the item and add the new item, but be sure to check if the modifications are valid."
