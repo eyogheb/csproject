@@ -201,18 +201,49 @@ def remove_combo(args) -> str: # this is the same as add_combo, but instead of a
 
 def place_order():
     """
-    Accepts a JSON string or dict containing items, adds a timestamp-based ID, and stores it in orders_collection.
+    Takes the current shopping_cart contents, builds an order document,
+    adds a timestamp, and inserts it into orders_collection.
     """
-    
-    print("hi")
+    print("Starting order placement...")
 
-    # Add timestamp-based order ID and creation time
+    if not shopping_cart:
+        return "Your cart is empty. Please add items before placing an order."
+
     now = datetime.now(timezone.utc).isoformat()
-    shopping_cart["created_at"] = now
-    print("hi2")
+
+    order_items = []
+
+    for key, value in shopping_cart.items():
+        if key == "created_at":
+            continue  # ignore any unexpected leftovers
+
+        item_data = {
+            "quantity": value["quantity"]
+        }
+
+        # Regular item
+        if key[0] != "combo":
+            item_data["type"] = "item"
+            item_data["name"] = key[0]
+            item_data["modifications"] = list(key[1])
+        else:
+            item_data["type"] = "combo"
+            item_data["details"] = value["items"]
+            item_data["price_per_combo"] = value["price_per_combo"]
+
+        order_items.append(item_data)
+
+    order_document = {
+        "created_at": now,
+        "items": order_items
+    }
 
     try:
-        orders_collection.insert_one(shopping_cart)
-        return f"Order placed successfully"
+        orders_collection.insert_one(order_document)
+        print("Order inserted:", order_document)
+        # Optionally clear the cart here if you want
+        shopping_cart.clear()
+        return "Order placed successfully!"
     except Exception as e:
+        print("Error inserting order:", e)
         return f"Failed to place order: {str(e)}"
