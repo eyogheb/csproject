@@ -199,7 +199,7 @@ def remove_combo(args) -> str: # this is the same as add_combo, but instead of a
         return f"Removed {quantity} combo(s) including {entree_item_name}, {side_item_name}, and {drink_item_name} from your cart."
     
 
-def place_order():
+def place_order(args=None):
     """
     Takes the current shopping_cart contents, builds an order document,
     adds a timestamp, and inserts it into orders_collection.
