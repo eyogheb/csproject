@@ -1,6 +1,6 @@
 from langchain_community.tools import Tool
-from database import get_menu_item, place_order
-from cart import add_to_cart, remove_from_cart, view_cart, add_combo, remove_combo
+from database import get_menu_item
+from cart import add_to_cart, remove_from_cart, view_cart, add_combo, remove_combo, place_order
 
 
 add_item_tool = Tool(
