@@ -203,10 +203,7 @@ def place_order():
     """
     Accepts a JSON string or dict containing items, adds a timestamp-based ID, and stores it in orders_collection.
     """
-
-    items = shopping_cart.get("cart")
-    if not isinstance(items, list) or not items:
-        return "Order must include a non-empty list of items."
+    
     print("hi")
 
     # Add timestamp-based order ID and creation time
