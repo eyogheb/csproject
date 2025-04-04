@@ -1,7 +1,7 @@
 import json
 import re
 from config import menu_collection, orders_collection
-from datetime import datetime, UTC
+from datetime import datetime, timezone
 
 
 def load_menu_data(): # This is not a tool used by the Agent, but we load the menu items and categories for it on startup to reduce the number of database calls
@@ -73,7 +73,7 @@ def place_order(order_data):
         return "Order must include a non-empty list of items."
 
     # Add timestamp-based order ID and creation time
-    now = datetime.now(UTC).isoformat()
+    now = datetime.now(timezone.utc).isoformat()
     order_data["created_at"] = now
 
     try:
