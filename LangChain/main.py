@@ -21,13 +21,16 @@ class UserRequest(BaseModel):
 
 @fastapi_app.post("/chat")
 def chat(request: UserRequest):
-    user_input = request.message
-    if not user_input:
-        raise HTTPException(status_code=400, detail="No message provided")
+    try:
+        user_input = request.message
+        if not user_input:
+            raise HTTPException(status_code=400, detail="No message provided")
     
-    input_messages = [HumanMessage(user_input)]
-    output = app.invoke({"messages": input_messages}, {"configurable": {"thread_id": "abc345"},"response_format": "json"},)
-    return {"content": output["messages"][-1].content}
+        input_messages = [HumanMessage(user_input)]
+        output = app.invoke({"messages": input_messages}, {"configurable": {"thread_id": "abc345"},"response_format": "json"},)
+        return {"content": output["messages"][-1].content}
+    except Exception as e:
+        return {"error": "Something went wrong while processing your message. Please try again later."}
 
 if __name__ == "__main__":
 

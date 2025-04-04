@@ -50,7 +50,10 @@ prompt_template = ChatPromptTemplate.from_messages(
             "If an Action is required, use: Action: <action_name> If no Action is required, use: Final Answer: <your response>"
             "Never leave a Thought without an Action or a Final Answer. If responding directly, skip 'Action' and use 'Final Answer' immediately."
             "Never wrap thoughts in markdown or any other formatting characters."
-            "When calling view_cart, make sure to include the action input",
+            "When calling view_cart, make sure to include the action input"
+            "IMPORTANT: If a function returns saying that the json formatting is bad, fix the input before you try again."
+            "IMPORTANT: JSON inputs should not include any formatting characters like quotes or backticks. Just the JSON itself."
+            "When displaying multiple items, try to format it in an easy to read manner, giving each item its own line.",
         ),
         MessagesPlaceholder(variable_name="messages"),
     ]
