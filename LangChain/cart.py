@@ -207,10 +207,12 @@ def place_order():
     items = shopping_cart.get("cart")
     if not isinstance(items, list) or not items:
         return "Order must include a non-empty list of items."
+    print("hi")
 
     # Add timestamp-based order ID and creation time
     now = datetime.now(timezone.utc).isoformat()
     shopping_cart["created_at"] = now
+    print("hi2")
 
     try:
         orders_collection.insert_one(shopping_cart)
