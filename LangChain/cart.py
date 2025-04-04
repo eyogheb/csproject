@@ -1,6 +1,9 @@
 # Shopping Cart (Initially Empty)
 import json
 from database import get_menu_item
+from datetime import datetime, timezone
+from config import orders_collection
+
 
 
 shopping_cart = {}
@@ -194,3 +197,23 @@ def remove_combo(args) -> str: # this is the same as add_combo, but instead of a
     else:
         shopping_cart[combo_key]["quantity"] -= quantity
         return f"Removed {quantity} combo(s) including {entree_item_name}, {side_item_name}, and {drink_item_name} from your cart."
+    
+
+def place_order():
+    """
+    Accepts a JSON string or dict containing items, adds a timestamp-based ID, and stores it in orders_collection.
+    """
+
+    items = shopping_cart.get("cart")
+    if not isinstance(items, list) or not items:
+        return "Order must include a non-empty list of items."
+
+    # Add timestamp-based order ID and creation time
+    now = datetime.now(timezone.utc).isoformat()
+    shopping_cart["created_at"] = now
+
+    try:
+        orders_collection.insert_one(shopping_cart)
+        return f"Order placed successfully"
+    except Exception as e:
+        return f"Failed to place order: {str(e)}"

@@ -1,7 +1,7 @@
 import json
 import re
-from config import menu_collection, orders_collection
-from datetime import datetime, timezone
+from config import menu_collection
+
 
 
 def load_menu_data(): # This is not a tool used by the Agent, but we load the menu items and categories for it on startup to reduce the number of database calls
@@ -53,31 +53,3 @@ def get_menu_item(args) -> list:
         return "No matching items found." # If it cant find any items matching the query it will return this
 
     return items   # Otherwise it returns the items it found
-
-def place_order(order_data):
-    """
-    Accepts a JSON string or dict containing items, adds a timestamp-based ID, and stores it in orders_collection.
-    """
-    try:
-        # Parse the input if it's a JSON string
-        if isinstance(order_data, str):
-            order_data = json.loads(order_data)
-    except json.JSONDecodeError:
-        return "Invalid JSON format for order."
-
-    if not isinstance(order_data, dict):
-        return "Order data must be a dictionary."
-
-    items = order_data.get("cart")
-    if not isinstance(items, list) or not items:
-        return "Order must include a non-empty list of items."
-
-    # Add timestamp-based order ID and creation time
-    now = datetime.now(timezone.utc).isoformat()
-    order_data["created_at"] = now
-
-    try:
-        orders_collection.insert_one(order_data)
-        return f"Order placed successfully with ID: {order_data['order_id']}"
-    except Exception as e:
-        return f"Failed to place order: {str(e)}"
