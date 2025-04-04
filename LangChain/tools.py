@@ -1,5 +1,5 @@
 from langchain_community.tools import Tool
-from database import get_menu_item
+from database import get_menu_item, place_order
 from cart import add_to_cart, remove_from_cart, view_cart, add_combo, remove_combo
 
 
@@ -45,6 +45,10 @@ remove_combo_tool = Tool(
         "You should format the input on one line"
         "The input should consist of 3 dictionaries, one for each item in the combo, with each containing for example \"item_name\": \"Big Mac\", \"modifications\": []"
     ))
+place_order_tool = Tool(
+    "place_order",
+    place_order,
+    "Places an order with the items in the cart. The order will be stored in the database.")
 
 
-tools = [add_item_tool, remove_item_tool, view_cart_tool, get_menu_item_tool, add_combo_tool, remove_combo_tool]
+tools = [add_item_tool, remove_item_tool, view_cart_tool, get_menu_item_tool, add_combo_tool, remove_combo_tool, place_order_tool]
