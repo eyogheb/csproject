@@ -12,7 +12,7 @@ def add_to_cart(args) -> str:
 
     try:
         if isinstance(args, str):
-            args = json.loads(args)
+            args = json.loads(args.strip("`")) # occasionally the AI will send the args as a string with backticks, this removes them
     except json.JSONDecodeError:
         return "Invalid JSON format for adding to cart."
 
@@ -39,7 +39,7 @@ def remove_from_cart(args) -> str:
 
     try:
         if isinstance(args, str):
-            args = json.loads(args)
+            args = json.loads(args.strip("`"))
     except json.JSONDecodeError:
         return "Invalid JSON format for removing from cart."
     
@@ -77,7 +77,7 @@ def add_combo(args) -> str:
 
     try:
         if isinstance(args, str):
-            args = json.loads(args)
+            args = json.loads(args.strip("`"))
     except json.JSONDecodeError:
         return "Invalid JSON format for adding a combo."
 
@@ -159,7 +159,7 @@ def remove_combo(args) -> str: # this is the same as add_combo, but instead of a
 
     try:
         if isinstance(args, str):
-            args = json.loads(args)
+            args = json.loads(args.strip("`"))
     except json.JSONDecodeError:
         return "Invalid JSON format for removing a combo."
 
