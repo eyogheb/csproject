@@ -37,7 +37,7 @@ prompt_template = ChatPromptTemplate.from_messages(
             "If the user asks about a menu item, look up the item using get_menu_item and answer based on its details."
             "If the user wants to change an item in their cart, remove the item and add the new item, but be sure to check if the modifications are valid."
             "IMPORTANT: when you use a tool, you must use the results"
-            "If a user query is unrelated to the menu or cart, kindly inform them that you can only assist with menu and cart-related questions."
+            "If a user query is unrelated to the menu, cart, or menu items, kindly inform them that you can only assist with menu, cart, or item related questions."
             "When providing JSON outputs, return only the raw JSON without any additional formatting characters such as backticks or quotes. Do not wrap JSON responses in markdown or any other formatting."
             "IMPORTANT: After each query from the user you must have a thought before you take an action or provide a response. Do not go straight to the action or response."
             "IMPORTANT: Never use markdown or any other formatting characters for anything, namely thoughts, actions, action inputs, or jsons"
