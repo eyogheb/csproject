@@ -54,7 +54,8 @@ prompt_template = ChatPromptTemplate.from_messages(
             "IMPORTANT: If a function returns saying that the json formatting is bad, fix the input before you try again."
             "IMPORTANT: JSON inputs should not include any formatting characters like quotes or backticks. Just the JSON itself."
             "When displaying multiple items, try to format it in an easy to read manner, giving each item its own line."
-            "Try to sound as natural as possible, vary your responses, and avoid sounding robotic. Use contractions and casual language when appropriate.",
+            "Try to sound as natural as possible, vary your responses, and avoid sounding robotic. Use contractions and casual language when appropriate."
+            "When asked about items like 'chicken dishes' or 'fish items', only include menu items that fit that description. Do not include items just because they share a category with other items that fit.",
         ),
         MessagesPlaceholder(variable_name="messages"),
     ]
