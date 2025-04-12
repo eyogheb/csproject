@@ -11,7 +11,7 @@ function App() {
   const introMessage = "Hello! Ronald is an AI chatbot that is able to take your order and answer any questions about the menu using text or speech.";
   const sendMessage = async (message) => {
     try {
-      const response = await axios.post("http://18.217.78.63:8000/chat", {message: message});
+      const response = await axios.post("https://18.217.78.63:8000/chat", {message: message});
       const newMessage = response.data.content;
 
       setMessages([...messages, {text: newMessage, type: "received"}]);
