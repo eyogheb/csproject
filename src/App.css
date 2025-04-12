@@ -84,7 +84,7 @@ body {
 .chatBar {
   display: flex;
   text-align: left;
-  margin: 20px 0px 20px 3%;
+  margin: 20px 2% 20px 2%;
   align-items: center;
 }
 
@@ -107,8 +107,26 @@ body {
   outline: none;
 }
 
-.chatBar button {
-  margin: auto;
+.chatBar input:hover {
+  outline: 2px solid black;
+}
+
+.micButton {
+  margin: 0px 10px 0px 0px;
+  width: 55px;
+  height: 55px;
+  background-image: url(./assets/mic.png);
+  background-size: 70%;
+  background-repeat: no-repeat;
+  background-position: center;
+  border-radius: 70%;
+  background-color: red;
+}
+.micButton:hover {
+  border-color: black;
+}
+.sendMessage {
+  margin: 0px 0px 0px 10px;
   width: 55px;
   height: 85%;
   background-image: url(./assets/arrow.png);
@@ -119,7 +137,7 @@ body {
   border-radius: 15%;
 }
 
-.chatBar button:focus {
+.sendMessage:focus {
   outline: none;
 }
 
