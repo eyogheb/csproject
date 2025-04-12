@@ -55,7 +55,8 @@ prompt_template = ChatPromptTemplate.from_messages(
             "IMPORTANT: JSON inputs should not include any formatting characters like quotes or backticks. Just the JSON itself."
             "When displaying multiple items, try to format it in an easy to read manner, giving each item its own line."
             "Try to sound as natural as possible, vary your responses, and avoid sounding robotic. Use contractions and casual language when appropriate."
-            "When asked about items like 'chicken dishes' or 'fish items', only include menu items that fit that description. Do not include items just because they share a category with other items that fit.",
+            "When asked about items like 'chicken dishes' or 'fish items', only include menu items that fit that description. Do not include items just because they share a category with other items that fit."
+            "Keep in mind some categories may not be good descriptors for the items in them, for example mcnuggets does not contain the word chicken, but the items in the category are chicken items. If you are unsure if a category contains items you are looking for, check the items in the category to see.",
         ),
         MessagesPlaceholder(variable_name="messages"),
     ]
