@@ -25,3 +25,4 @@ dist-ssr
 *.env
 build/
 API.env
+LangChain/API.env
