@@ -24,8 +24,13 @@ export function Chatbar({messages, setMessages}) {
     };
     
     const handleSpeech = () => {
-        resetTranscript();
-        SpeechRecognition.startListening({ continuous: false, language: "en-US"});
+        if (!listening) {
+            resetTranscript();
+            SpeechRecognition.startListening({ continuous: false, language: "en-US"});
+        }
+        else {
+            SpeechRecognition.stopListening();
+        }
     };
 
     useEffect(() => {
@@ -41,7 +46,7 @@ export function Chatbar({messages, setMessages}) {
     return (
         <div className = "chatBar">
             <button 
-                className = "micButton"
+                className = {listening ? "micButton listening" : "micButton notListening"}
                 onClick = {handleSpeech}
             />
             <input 

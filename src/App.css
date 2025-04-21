@@ -120,11 +120,24 @@ body {
   background-repeat: no-repeat;
   background-position: center;
   border-radius: 70%;
-  background-color: red;
 }
+
+.micButton:focus {
+  outline: none;
+}
+
 .micButton:hover {
   border-color: black;
 }
+
+.notListening {
+  background-color: red;
+}
+
+.listening {
+  background-color: lightgreen;
+}
+
 .sendMessage {
   margin: 0px 0px 0px 10px;
   width: 55px;
